@@ -59,6 +59,13 @@ $active = isset($active) ? $active : '';
             </a>
           </li>
 
+          <li class="sp-sidebar-item">
+            <a class="sp-sidebar-link <?php echo ($active==='metrics'?'active':''); ?>"
+              href="<?php echo esc_url(Url::page('metrics')); ?>">
+              <span class="sp-dot"></span>SDG &amp; Indikator THE
+            </a>
+          </li>
+
           <?php if (Auth::isReviewer()) : ?>
           <li class="sp-sidebar-item" style="margin-top:6px;">
             <a class="sp-sidebar-link <?php echo ($active==='review'?'active':''); ?>"

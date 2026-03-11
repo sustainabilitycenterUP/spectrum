@@ -186,4 +186,38 @@ final class DashboardRepository {
 
     return $wpdb->get_results($sql);
   }
+
+  public static function weeklyCounts($year = 0) {
+    global $wpdb;
+    $e = Db::table('spectrum_evidence');
+
+    $where = "created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)";
+    $params = array();
+
+    if ($year) {
+      $where .= " AND year = %d";
+      $params[] = $year;
+    }
+
+    $sql = "
+      SELECT
+        COUNT(*) AS total,
+        SUM(CASE WHEN status='SUBMITTED' THEN 1 ELSE 0 END) AS submitted,
+        SUM(CASE WHEN status='APPROVED' THEN 1 ELSE 0 END) AS approved
+      FROM {$e}
+      WHERE {$where}
+    ";
+
+    if (!empty($params)) {
+      $sql = $wpdb->prepare($sql, $params);
+    }
+
+    $row = $wpdb->get_row($sql);
+
+    return array(
+      'total' => (int)($row->total ?? 0),
+      'submitted' => (int)($row->submitted ?? 0),
+      'approved' => (int)($row->approved ?? 0),
+    );
+  }
 }
