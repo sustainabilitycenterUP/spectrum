@@ -8,6 +8,7 @@ use Spectrum\Evidence\Shortcodes\EvidenceFormShortcode;
 use Spectrum\Evidence\Shortcodes\EvidenceDetailShortcode;
 use Spectrum\Evidence\Shortcodes\ReviewQueueShortcode;
 use Spectrum\Evidence\Shortcodes\DashboardShortcode;
+use Spectrum\Evidence\Shortcodes\MetricCatalogShortcode;
 
 if (!defined('ABSPATH')) exit;
 
@@ -28,6 +29,7 @@ final class Plugin {
     add_shortcode(
       'spectrum_dashboard',
       array(\Spectrum\Evidence\Shortcodes\DashboardShortcode::class, 'render'));
+    add_shortcode('spectrum_metric_catalog', array(MetricCatalogShortcode::class, 'render'));
   }
 
   public static function activate() {

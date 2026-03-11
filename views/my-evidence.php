@@ -25,13 +25,109 @@ include __DIR__ . '/layout-open.php';
   <?php endif; ?>
 
   <?php if (empty($rows)): ?>
+    <form method="get" style="display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:14px;">
+      <div>
+        <label class="sp-label">Tahun</label>
+        <select name="year" class="sp-select" style="min-width:160px;">
+          <option value="">Semua Tahun</option>
+          <?php foreach ((array)$years as $y): ?>
+            <option value="<?php echo (int)$y; ?>" <?php selected((int)$filters['year'], (int)$y); ?>>
+              <?php echo esc_html($y); ?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+
+      <div>
+        <label class="sp-label">Status</label>
+        <select name="status" class="sp-select" style="min-width:180px;">
+          <option value="">Semua Status</option>
+          <?php foreach (array('DRAFT','SUBMITTED','APPROVED','REJECTED') as $st): ?>
+            <option value="<?php echo esc_attr($st); ?>" <?php selected($filters['status'], $st); ?>>
+              <?php echo esc_html($st); ?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+
+      <div>
+        <label class="sp-label">SDG</label>
+        <select name="sdg_number" class="sp-select" style="min-width:160px;">
+          <option value="">Semua SDG</option>
+          <?php for ($i=1; $i<=17; $i++): ?>
+            <option value="<?php echo (int)$i; ?>" <?php selected((int)$filters['sdg_number'], (int)$i); ?>>
+              SDG <?php echo (int)$i; ?>
+            </option>
+          <?php endfor; ?>
+        </select>
+      </div>
+
+      <div style="min-width:220px;">
+        <label class="sp-label">Cari Judul</label>
+        <input type="text" name="keyword" class="sp-input" value="<?php echo esc_attr($filters['keyword']); ?>" placeholder="contoh: food waste">
+      </div>
+
+      <div>
+        <button class="sp-btn-primary" type="submit">Terapkan</button>
+        <a class="sp-btn-secondary" href="<?php echo esc_url(Url::page('my')); ?>">Reset</a>
+      </div>
+    </form>
+
     <div class="sp-empty">Belum ada evidence. Klik <strong>"Buat Evidence Baru"</strong> untuk mulai.</div>
   <?php else: ?>
+    <form method="get" style="display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:14px;">
+      <div>
+        <label class="sp-label">Tahun</label>
+        <select name="year" class="sp-select" style="min-width:160px;">
+          <option value="">Semua Tahun</option>
+          <?php foreach ((array)$years as $y): ?>
+            <option value="<?php echo (int)$y; ?>" <?php selected((int)$filters['year'], (int)$y); ?>>
+              <?php echo esc_html($y); ?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+
+      <div>
+        <label class="sp-label">Status</label>
+        <select name="status" class="sp-select" style="min-width:180px;">
+          <option value="">Semua Status</option>
+          <?php foreach (array('DRAFT','SUBMITTED','APPROVED','REJECTED') as $st): ?>
+            <option value="<?php echo esc_attr($st); ?>" <?php selected($filters['status'], $st); ?>>
+              <?php echo esc_html($st); ?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+
+      <div>
+        <label class="sp-label">SDG</label>
+        <select name="sdg_number" class="sp-select" style="min-width:160px;">
+          <option value="">Semua SDG</option>
+          <?php for ($i=1; $i<=17; $i++): ?>
+            <option value="<?php echo (int)$i; ?>" <?php selected((int)$filters['sdg_number'], (int)$i); ?>>
+              SDG <?php echo (int)$i; ?>
+            </option>
+          <?php endfor; ?>
+        </select>
+      </div>
+
+      <div style="min-width:220px;">
+        <label class="sp-label">Cari Judul</label>
+        <input type="text" name="keyword" class="sp-input" value="<?php echo esc_attr($filters['keyword']); ?>" placeholder="contoh: food waste">
+      </div>
+
+      <div>
+        <button class="sp-btn-primary" type="submit">Terapkan</button>
+        <a class="sp-btn-secondary" href="<?php echo esc_url(Url::page('my')); ?>">Reset</a>
+      </div>
+    </form>
+
     <div style="width:100%;overflow-x:auto;">
       <table class="sp-table">
         <thead>
           <tr>
-            <th>Judul</th><th>Tahun</th><th>Unit</th><th>Status</th><th>Update</th><th>Aksi</th>
+            <th>Judul</th><th>Tahun</th><th>SDG</th><th>Unit</th><th>Status</th><th>Update</th><th>Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -43,6 +139,7 @@ include __DIR__ . '/layout-open.php';
                 </a>
               </td>
               <td><?php echo esc_html($r->year); ?></td>
+              <td><?php echo !empty($r->sdg_number) ? esc_html('SDG ' . $r->sdg_number) : '—'; ?></td>
               <td><?php echo esc_html($r->unit_code); ?></td>
               <td><span class="sp-status-badge sp-status-<?php echo esc_attr($r->status); ?>"><?php echo esc_html($r->status); ?></span></td>
               <td><?php echo esc_html($r->updated_at); ?></td>

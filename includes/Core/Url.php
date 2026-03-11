@@ -15,6 +15,7 @@ final class Url {
       'dash'   => 'dashboard-reviewer',
       'approved' => 'approved-evidence',
       'dashboard' => 'dashboard-spectrum',
+      'metrics' => 'sdg-indikator-the',
     );
     return isset($map[$key]) ? $map[$key] : '';
   }

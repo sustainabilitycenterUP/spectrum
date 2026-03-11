@@ -21,6 +21,7 @@ final class DashboardShortcode {
       'year'   => $year,
       'years'  => DashboardRepository::distinctYears(),
       'status' => DashboardRepository::statusCounts($year),
+      'weekly' => DashboardRepository::weeklyCounts($year),
       'sdg'    => DashboardRepository::sdgCounts($year),
       'sdg_summary' => DashboardRepository::sdgSummary($year),
       'unit'   => DashboardRepository::unitCounts($year),

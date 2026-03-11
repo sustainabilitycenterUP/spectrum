@@ -29,6 +29,59 @@ final class EvidenceRepository {
     ));
   }
 
+  public static function findBySubmitterFiltered($submitter_id, $filters = array()) {
+    global $wpdb;
+
+    $e  = self::table();
+    $em = Db::table('spectrum_evidence_metric');
+    $m  = Db::table('spectrum_metric');
+
+    $where = "WHERE e.submitter_id = %d";
+    $params = array((int)$submitter_id);
+
+    if (!empty($filters['year'])) {
+      $where .= " AND e.year = %d";
+      $params[] = (int)$filters['year'];
+    }
+
+    if (!empty($filters['status'])) {
+      $where .= " AND e.status = %s";
+      $params[] = $filters['status'];
+    }
+
+    if (!empty($filters['sdg_number'])) {
+      $where .= " AND m.sdg_number = %d";
+      $params[] = (int)$filters['sdg_number'];
+    }
+
+    if (!empty($filters['keyword'])) {
+      $where .= " AND e.title LIKE %s";
+      $params[] = '%' . $wpdb->esc_like($filters['keyword']) . '%';
+    }
+
+    $sql = "
+      SELECT e.id, e.year, e.title, e.status, e.unit_code, e.updated_at, e.created_at,
+             m.sdg_number, m.metric_code
+      FROM {$e} e
+      LEFT JOIN {$em} em ON em.evidence_id = e.id
+      LEFT JOIN {$m}  m  ON m.id = em.metric_id
+      {$where}
+      ORDER BY e.updated_at DESC, e.created_at DESC
+    ";
+
+    $sql = $wpdb->prepare($sql, $params);
+    return $wpdb->get_results($sql);
+  }
+
+  public static function distinctYearsBySubmitter($submitter_id) {
+    global $wpdb;
+    $t = self::table();
+    return $wpdb->get_col($wpdb->prepare(
+      "SELECT DISTINCT year FROM {$t} WHERE submitter_id = %d ORDER BY year DESC",
+      (int)$submitter_id
+    ));
+  }
+
   public static function insert($data) {
     global $wpdb;
     $t = self::table();

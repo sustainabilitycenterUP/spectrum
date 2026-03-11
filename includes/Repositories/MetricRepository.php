@@ -23,4 +23,52 @@ final class MetricRepository {
       ORDER BY m.sdg_number, m.metric_code
     ");
   }
+
+  public static function activeYears() {
+    global $wpdb;
+    $y = self::tYearMetric();
+    return $wpdb->get_col("SELECT DISTINCT year FROM {$y} WHERE is_active=1 ORDER BY year DESC");
+  }
+
+  public static function catalog($filters = array()) {
+    global $wpdb;
+    $m = self::tMetric();
+    $y = self::tYearMetric();
+
+    $where = "WHERE y.is_active=1";
+    $params = array();
+
+    if (!empty($filters['year'])) {
+      $where .= " AND y.year = %d";
+      $params[] = (int)$filters['year'];
+    }
+
+    if (!empty($filters['sdg_number'])) {
+      $where .= " AND m.sdg_number = %d";
+      $params[] = (int)$filters['sdg_number'];
+    }
+
+    if (!empty($filters['keyword'])) {
+      $where .= " AND (m.metric_code LIKE %s OR m.metric_title LIKE %s OR m.metric_question LIKE %s)";
+      $keyword = '%' . $wpdb->esc_like($filters['keyword']) . '%';
+      $params[] = $keyword;
+      $params[] = $keyword;
+      $params[] = $keyword;
+    }
+
+    $sql = "
+      SELECT m.id, m.sdg_number, m.metric_code, m.metric_type, m.metric_title,
+             m.metric_question, m.metric_note, y.year
+      FROM {$m} m
+      JOIN {$y} y ON y.metric_id = m.id
+      {$where}
+      ORDER BY y.year DESC, m.sdg_number ASC, m.metric_code ASC
+    ";
+
+    if (!empty($params)) {
+      $sql = $wpdb->prepare($sql, $params);
+    }
+
+    return $wpdb->get_results($sql);
+  }
 }
