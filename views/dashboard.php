@@ -7,6 +7,7 @@ include __DIR__ . '/layout-open.php';
 
 $year = (int)($year ?? 0);
 $status = $status ?? array();
+$weekly = $weekly ?? array('total' => 0, 'submitted' => 0, 'approved' => 0);
 ?>
 
 <div class="sp-page-header">
@@ -57,7 +58,11 @@ $status = $status ?? array();
         <div style="font-size:26px;font-weight:650;margin-top:6px;"><?php echo esc_html($v); ?></div>
         <div style="margin-top:6px;">
           <span style="background:#dcfce7;color:#166534;padding:3px 8px;border-radius:999px;font-size:11px;">
-            +<?php echo rand(1,5); ?> minggu ini
+            +<?php
+              echo ($k === 'Total Evidence')
+                ? (int)$weekly['total']
+                : (($k === 'Submitted') ? (int)$weekly['submitted'] : (int)$weekly['approved']);
+            ?> dalam 7 hari
           </span>
         </div>
       </div>

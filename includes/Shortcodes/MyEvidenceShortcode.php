@@ -18,10 +18,25 @@ final class MyEvidenceShortcode {
     $user_id = Auth::userId();
     $user = wp_get_current_user();
 
+    $filters = array(
+      // prefer non-reserved query var names, fallback ke nama lama untuk kompatibilitas
+      'year' => isset($_GET['f_year']) ? (int)$_GET['f_year'] : (isset($_GET['year']) ? (int)$_GET['year'] : 0),
+      'status' => isset($_GET['f_status']) ? sanitize_text_field($_GET['f_status']) : (isset($_GET['status']) ? sanitize_text_field($_GET['status']) : ''),
+      'sdg_number' => isset($_GET['f_sdg']) ? (int)$_GET['f_sdg'] : (isset($_GET['sdg_number']) ? (int)$_GET['sdg_number'] : 0),
+      'keyword' => isset($_GET['q']) ? sanitize_text_field($_GET['q']) : (isset($_GET['keyword']) ? sanitize_text_field($_GET['keyword']) : ''),
+    );
+
+    $allowed_status = array('DRAFT', 'SUBMITTED', 'APPROVED', 'REJECTED');
+    if (!in_array($filters['status'], $allowed_status, true)) {
+      $filters['status'] = '';
+    }
+
     return View::render('my-evidence', array(
       'notice' => Notices::get($user_id),
       'email'  => $user->user_email,
-      'rows'   => EvidenceRepository::findBySubmitter($user_id),
+      'filters' => $filters,
+      'years' => EvidenceRepository::distinctYearsBySubmitter($user_id),
+      'rows'   => EvidenceRepository::findBySubmitterFiltered($user_id, $filters),
     ));
   }
 }
